@@ -7,59 +7,50 @@ import {
   Button, 
   Box, 
   Grid,
+  useTheme,
+  useMediaQuery,
   Dialog,
   DialogContent,
   IconButton,
-  useTheme,
-  useMediaQuery,
+  CircularProgress,
   Snackbar,
-  Alert,
-  CircularProgress
+  Alert
 } from '@mui/material';
-import { Target, Camera, Goal, ArrowLeft, Play, X, Users, Calendar, Trophy, Briefcase, HelpCircle } from 'lucide-react';
+import { Calculator, HandIcon as HandStop, Coins, ArrowLeft, Play, X } from 'lucide-react';
 import SideDrawer from '../components/drawer';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
-const PerfectAvatar = () => {
+const MillionDollarMessage = () => {
   const [formData, setFormData] = useState({
-  clientGender: {
-    gender: '',
-  },
-  clientAge: {
-    age: '',
-  },
-  clientsCoreProblem: {
-    Your_clients_core_problem: '',
-  },
-  clients_ultimate_goal: {
-    Your_clients_ultimate_goal: '',
-  },
-  clientsNiche: {
-    Your_clients_Niche: '',
-  },
-  frustrated_questions_before_bed_time: {
-    Your_frustrated_question_for_clients_before_bed_time: '',
-  }
-});
+    calculator: {
+      businessCategory: '',
+      coreCurrency: '',
+      increase: '',
+      metricTimeline: ''
+    },
+    clientFilter: {
+      willAccept: '',
+      willReject: ''
+    },
+    message: {
+      primaryGoal: '',
+      primaryAspiration: '',
+      topObstacles: '',
+      millionDollarMessage: ''
+    }
+  });
   const [open, setOpen] = useState(true);
-  const [videoOpen, setVideoOpen] = useState(false);
   const [completedForms, setCompletedForms] = useState({
-  clientGender: false,
-  clientAge: false,
-  clientsCoreProblem: false,
-  clients_ultimate_goal: false,
-  clientsNiche: false,
-  frustrated_questions_before_bed_time: false
-});
+    calculator: false,
+    clientFilter: false,
+    message: false
+  });
   const [formChanged, setFormChanged] = useState({
-  clientGender: false,
-  clientAge: false,
-  clientsCoreProblem: false,
-  clients_ultimate_goal: false,
-  clientsNiche: false,
-  frustrated_questions_before_bed_time: false
-});
+    calculator: false,
+    clientFilter: false,
+    message: false
+  });
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
@@ -67,6 +58,7 @@ const PerfectAvatar = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [videoOpen, setVideoOpen] = useState(false);
   const navigate = useNavigate();
   const { projectId } = useParams();
 
@@ -79,7 +71,7 @@ const PerfectAvatar = () => {
         const response = await axios.get(`http://localhost/projectdataapi.php`, {
           params: {
             project_id: projectId,
-            step_name: 'perfectAvatar'
+            step_name: 'millionDollar'
           },
           headers: { 'Authorization': token }
         });
@@ -91,12 +83,9 @@ const PerfectAvatar = () => {
       
           // Calculate completed forms based on saved data
           const newCompletedForms = {
-            clientGender: response.data.data.clientGender && Object.values(response.data.data.clientGender).every(value => value && value.trim() !== ''),
-            clientAge: response.data.data.clientAge && Object.values(response.data.data.clientAge).every(value => value && value.trim() !== ''),
-            clientsCoreProblem: response.data.data.clientsCoreProblem && Object.values(response.data.data.clientsCoreProblem).every(value => value && value.trim() !== ''),
-            clients_ultimate_goal: response.data.data.clients_ultimate_goal && Object.values(response.data.data.clients_ultimate_goal).every(value => value && value.trim() !== ''),
-            clientsNiche: response.data.data.clientsNiche && Object.values(response.data.data.clientsNiche).every(value => value && value.trim() !== ''),
-            frustrated_questions_before_bed_time: response.data.data.frustrated_questions_before_bed_time && Object.values(response.data.data.frustrated_questions_before_bed_time).every(value => value && value.trim() !== '')
+            calculator: response.data.data.calculator && Object.values(response.data.data.calculator).every(value => value && value.trim() !== ''),
+            clientFilter: response.data.data.clientFilter && Object.values(response.data.data.clientFilter).every(value => value && value.trim() !== ''),
+            message: response.data.data.message && Object.values(response.data.data.message).every(value => value && value.trim() !== '')
           };
           setCompletedForms(newCompletedForms);
         } else if (response.data.status === 'empty') {
@@ -121,6 +110,27 @@ const PerfectAvatar = () => {
     loadData();
   }, [projectId]);
 
+  useEffect(() => {
+    // Update progress whenever completedForms changes
+    const updateProgress = async () => {
+      const progress = Object.values(completedForms).filter(Boolean).length;
+      try {
+        const token = localStorage.getItem('token');
+        await axios.post('http://localhost/projectdataapi.php', {
+          project_id: projectId,
+          step_name: 'millionDollarProgress',
+          data: { progress }
+        }, {
+          headers: { 'Authorization': token }
+        });
+      } catch (error) {
+        console.error('Error updating progress:', error);
+      }
+    };
+    
+    updateProgress();
+  }, [completedForms, projectId]);
+
   const handleChange = (section, field) => (event) => {
     const newFormData = {
       ...formData,
@@ -138,9 +148,6 @@ const PerfectAvatar = () => {
   };
 
   const validateForm = (section) => {
-    if (section === 'clientGender' || section === 'clientAge') {
-      return formData[section] && Object.values(formData[section]).every(value => value && value.trim() !== '');
-    }
     return formData[section] && Object.values(formData[section]).every(value => value && value.trim() !== '');
   };
 
@@ -152,13 +159,14 @@ const PerfectAvatar = () => {
         
         const saveResponse = await axios.post('http://localhost/projectdataapi.php', {
           project_id: projectId,
-          step_name: 'perfectAvatar',
+          step_name: 'millionDollar',
           data: formData
         }, {
           headers: { 'Authorization': token }
         });
 
         if (saveResponse.data.status === 'success') {
+          // Update local completed forms state
           const newCompletedForms = {
             ...completedForms,
             [section]: true
@@ -169,6 +177,18 @@ const PerfectAvatar = () => {
             ...prev,
             [section]: false
           }));
+
+          // Calculate actual progress based on completed forms
+          const progress = Object.values(newCompletedForms).filter(Boolean).length;
+          
+          // Update progress in the database
+          await axios.post('http://localhost/projectdataapi.php', {
+            project_id: projectId,
+            step_name: 'millionDollarProgress',
+            data: { progress }
+          }, {
+            headers: { 'Authorization': token }
+          });
 
           setSnackbar({
             open: true,
@@ -252,78 +272,58 @@ const PerfectAvatar = () => {
             Back to Home
           </Button>
           <Typography variant="h4" sx={{ mb: 4 }}>
-            Perfect Avatar ® ({Object.values(completedForms).filter(Boolean).length}/6 completed)
+            Million Dollar Message ® ({Object.values(completedForms).filter(Boolean).length}/3 completed)
           </Typography>
           
           <Grid container spacing={3}>
-            {/* Client Gender Card */}
+            {/* Calculator Card */}
             <Grid item xs={12} md={4}>
               <Card sx={{ height: '100%' }}>
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                    <Users size={24} />
+                    <Calculator size={24} />
                     <Typography variant="h6" sx={{ ml: 1 }}>
-                      Client Gender ®
-                    </Typography>
-                  </Box>
-                  
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle1" gutterBottom>
-                      Select client gender:
-                    </Typography>
-                    <Box sx={{ display: 'flex', gap: 2 }}>
-                      <Button
-                        variant={formData.clientGender?.gender === 'male' ? 'contained' : 'outlined'}
-                        onClick={() => handleChange('clientGender', 'gender')({ target: { value: 'male' } })}
-                      >
-                        Male
-                      </Button>
-                      <Button
-                        variant={formData.clientGender?.gender === 'female' ? 'contained' : 'outlined'}
-                        onClick={() => handleChange('clientGender', 'gender')({ target: { value: 'female' } })}
-                      >
-                        Female
-                      </Button>
-                    </Box>
-                  </Box>
-                  
-                  <Button 
-                    variant="contained" 
-                    onClick={() => handleSave('clientGender')}
-                    fullWidth
-                    disabled={!formChanged.clientGender && completedForms.clientGender || isSaving}
-                  >
-                    {isSaving ? <CircularProgress size={24} /> : 'Save'}
-                  </Button>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            {/* Client Age Card */}
-            <Grid item xs={12} md={4}>
-              <Card sx={{ height: '100%' }}>
-                <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                    <Calendar size={24} />
-                    <Typography variant="h6" sx={{ ml: 1 }}>
-                      Client Age ®
+                      CALCULATOR ®
                     </Typography>
                   </Box>
                   
                   <TextField
                     fullWidth
-                    label="Client age (your client age range for EXP: 25-35)"
-                    type="text"
-                    value={formData.clientAge?.age || ''}
-                    onChange={handleChange('clientAge', 'age')}
+                    label="MY BUSINESS CATEGORY"
+                    value={formData.calculator?.businessCategory || ''}
+                    onChange={handleChange('calculator', 'businessCategory')}
+                    sx={{ mb: 2 }}
+                  />
+                  
+                  <TextField
+                    fullWidth
+                    label="MY CORE CURRENCY IS"
+                    value={formData.calculator?.coreCurrency || ''}
+                    onChange={handleChange('calculator', 'coreCurrency')}
+                    sx={{ mb: 2 }}
+                  />
+                  
+                  <TextField
+                    fullWidth
+                    label="INCREASE"
+                    value={formData.calculator?.increase || ''}
+                    onChange={handleChange('calculator', 'increase')}
+                    sx={{ mb: 2 }}
+                  />
+                  
+                  <TextField
+                    fullWidth
+                    label="METRIC + TIMELINE"
+                    value={formData.calculator?.metricTimeline || ''}
+                    onChange={handleChange('calculator', 'metricTimeline')}
                     sx={{ mb: 2 }}
                   />
                   
                   <Button 
                     variant="contained" 
-                    onClick={() => handleSave('clientAge')}
+                    onClick={() => handleSave('calculator')}
                     fullWidth
-                    disabled={!formChanged.clientAge && completedForms.clientAge || isSaving}
+                    disabled={!formChanged.calculator && completedForms.calculator || isSaving}
                   >
                     {isSaving ? <CircularProgress size={24} /> : 'Save'}
                   </Button>
@@ -331,144 +331,105 @@ const PerfectAvatar = () => {
               </Card>
             </Grid>
 
-            {/* Avatar client CORE PROBLEME */}
+            {/* Client Filter Card */}
             <Grid item xs={12} md={4}>
               <Card sx={{ height: '100%' }}>
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                    <Target size={24} />
+                    <HandStop size={24} />
                     <Typography variant="h6" sx={{ ml: 1 }}>
-                    Your client's core problem ®
+                      NEW CLIENT FILTER ®
                     </Typography>
                   </Box>
                   
                   <TextField
                     fullWidth
-                    label="(what's the number 1 problem of your client) "
+                    label="WHO WILL YOU ACCEPT"
+                    multiline
+                    rows={4}
+                    value={formData.clientFilter?.willAccept || ''}
+                    onChange={handleChange('clientFilter', 'willAccept')}
+                    sx={{ mb: 2 }}
+                  />
+                  
+                  <TextField
+                    fullWidth
+                    label="WHO WILL REJECT"
+                    multiline
+                    rows={4}
+                    value={formData.clientFilter?.willReject || ''}
+                    onChange={handleChange('clientFilter', 'willReject')}
+                    sx={{ mb: 2 }}
+                  />
+                  
+                  <Button 
+                    variant="contained" 
+                    onClick={() => handleSave('clientFilter')}
+                    fullWidth
+                    disabled={!formChanged.clientFilter && completedForms.clientFilter || isSaving}
+                  >
+                    {isSaving ? <CircularProgress size={24} /> : 'Save'}
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Million Dollar Message Card */}
+            <Grid item xs={12} md={4}>
+              <Card sx={{ height: '100%' }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                    <Coins size={24} />
+                    <Typography variant="h6" sx={{ ml: 1 }}>
+                      MILLION DOLLAR MESSAGE ®
+                    </Typography>
+                  </Box>
+                  
+                  <TextField
+                    fullWidth
+                    label="PRIMARY GOAL"
                     multiline
                     rows={3}
-                    value={formData.clientsCoreProblem?.Your_clients_core_problem || ''}
-                    onChange={handleChange('clientsCoreProblem', 'Your_clients_core_problem')}
+                    value={formData.message?.primaryGoal || ''}
+                    onChange={handleChange('message', 'primaryGoal')}
                     sx={{ mb: 2 }}
                   />
-                  
-                 
-               
-                  
-                  <Button 
-                    variant="contained" 
-                    onClick={() => handleSave('clientsCoreProblem')}
-                    fullWidth
-                    disabled={!formChanged.clientsCoreProblem && completedForms.clientsCoreProblem || isSaving}
-                  >
-                    {isSaving ? <CircularProgress size={24} /> : 'Save'}
-                  </Button>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            
-            {/* Avatar client  ultimate goal */}
-            <Grid item xs={12} md={4}>
-              <Card sx={{ height: '100%' }}>
-                <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                    <Trophy size={24} />
-                    <Typography variant="h6" sx={{ ml: 1 }}>
-                    Your client's ultimate goal ®
-                    </Typography>
-                  </Box>
                   
                   <TextField
                     fullWidth
-                    label="(what's the number 1 goal your client wants to achieve) "
+                    label="PRIMARY ASPIRATION"
                     multiline
                     rows={3}
-                    value={formData.clients_ultimate_goal?.Your_clients_ultimate_goal || ''}
-                    onChange={handleChange('clients_ultimate_goal', 'Your_clients_ultimate_goal')}
+                    value={formData.message?.primaryAspiration || ''}
+                    onChange={handleChange('message', 'primaryAspiration')}
                     sx={{ mb: 2 }}
                   />
-                  
-                 
-               
-                  
-                  <Button 
-                    variant="contained" 
-                    onClick={() => handleSave('clients_ultimate_goal')}
-                    fullWidth
-                    disabled={!formChanged.clients_ultimate_goal && completedForms.clients_ultimate_goal || isSaving}
-                  >
-                    {isSaving ? <CircularProgress size={24} /> : 'Save'}
-                  </Button>
-                </CardContent>
-              </Card>
-            </Grid>
-
-             {/* Avatar client's Niche */}
-             <Grid item xs={12} md={4}>
-              <Card sx={{ height: '100%' }}>
-                <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                    <Briefcase size={24} />
-                    <Typography variant="h6" sx={{ ml: 1 }}>
-                    Your client's Niche  ®
-                    </Typography>
-                  </Box>
                   
                   <TextField
                     fullWidth
-                    label="(what industry is your client in? For EXP: coaches and consultants)"
+                    label="TOP 3 OBSTACLES"
                     multiline
                     rows={3}
-                    value={formData.clientsNiche?.Your_clients_Niche || ''}
-                    onChange={handleChange('clientsNiche', 'Your_clients_Niche')}
+                    value={formData.message?.topObstacles || ''}
+                    onChange={handleChange('message', 'topObstacles')}
                     sx={{ mb: 2 }}
                   />
-                  
-                 
-               
-                  
-                  <Button 
-                    variant="contained" 
-                    onClick={() => handleSave('clientsNiche')}
-                    fullWidth
-                    disabled={!formChanged.clientsNiche && completedForms.clientsNiche || isSaving}
-                  >
-                    {isSaving ? <CircularProgress size={24} /> : 'Save'}
-                  </Button>
-                </CardContent>
-              </Card>
-            </Grid>
-
-
-            {/* Avatar Goals Card */}
-            <Grid item xs={12} md={4}>
-              <Card sx={{ height: '100%' }}>
-                <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                    <HelpCircle size={24} />
-                    <Typography variant="h6" sx={{ ml: 1 }}>
-                    The questions that make your client frustrated before bedtime . ®
-                    </Typography>
-                  </Box>
                   
                   <TextField
                     fullWidth
-                    label="(what's the number 1 thing that makes your client frustrated before bedtime, at 3 am and first time in the morning (for example: how to make my ads profitable)."
+                    label="YOUR MILLION DOLLAR MESSAGE"
                     multiline
                     rows={3}
-                    value={formData.frustrated_questions_before_bed_time?.Your_frustrated_question_for_clients_before_bed_time || ''}
-                    onChange={handleChange('frustrated_questions_before_bed_time', 'Your_frustrated_question_for_clients_before_bed_time')}
+                    value={formData.message?.millionDollarMessage || ''}
+                    onChange={handleChange('message', 'millionDollarMessage')}
                     sx={{ mb: 2 }}
                   />
                   
-                 
-                  
                   <Button 
                     variant="contained" 
-                    onClick={() => handleSave('frustrated_questions_before_bed_time')}
+                    onClick={() => handleSave('message')}
                     fullWidth
-                    disabled={!formChanged.frustrated_questions_before_bed_time && completedForms.frustrated_questions_before_bed_time || isSaving}
+                    disabled={!formChanged.message && completedForms.message || isSaving}
                   >
                     {isSaving ? <CircularProgress size={24} /> : 'Save'}
                   </Button>
@@ -528,5 +489,5 @@ const PerfectAvatar = () => {
   );
 };
 
-export default PerfectAvatar;
+export default MillionDollarMessage;
 

@@ -11,3 +11,6 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+ .passsword{
+  background:linear-gradient('135deg, #667eea 0%, #764ba2 100%') ;
+ }

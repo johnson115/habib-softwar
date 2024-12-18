@@ -12,31 +12,25 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
-    console.log("Submitting Login:", email, password);
-
-    if (!email || !password) {
-      setError("Email and Password are required");
-      setLoading(false);
-      return;
-    }
-
     try {
-      console.log("Sending login request:", { email, password });
-      const response = await axios.post("http://localhost:5000/api/auth/login", {
+      const response = await axios.post('http://localhost/login.php', {
         email,
-        password,
+        password
       });
-      console.log("Login response:", response.data);
-      
-      localStorage.setItem("token", response.data.token);
-      navigate("/");
-    } catch (err) {
-      console.error("Login error:", err.response ? err.response.data : err.message);
-      setError(err.response ? err.response.data.message : "Network error");
-    } finally {
-      setLoading(false);
+      setLoading(true)
+
+      if (response.data.success && response.data.token) {
+        // Store the token with Bearer prefix
+        localStorage.setItem('token', `Bearer ${response.data.token}`);
+        setLoading(false)
+        navigate('/');
+      } else {
+        setError('Login failed. Please try again.');
+        setLoading(false)
+      }
+    } catch (error) {
+      setError(error.response?.data?.message || 'An error occurred');
+      setLoading(false)
     }
   };
 
