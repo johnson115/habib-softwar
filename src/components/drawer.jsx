@@ -43,7 +43,8 @@ const SideDrawer = ({open, setOpen, activeProject, setActiveProject, onProjectCh
   const fetchProjects = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost/projectapi.php/projects', {
+      const userId = localStorage.getItem('userId'); // Add this line to get the user ID
+      const response = await axios.get(`http://localhost/projectapi.php/projects?userId=${userId}`, {
         headers: { 'Authorization': token }
       });
       console.log('Fetched projects:', response.data);
@@ -53,6 +54,7 @@ const SideDrawer = ({open, setOpen, activeProject, setActiveProject, onProjectCh
       setError('Failed to fetch projects');
     }
   };
+
 
   const addProject = async () => {
     if (!newProjectName.trim()) {
@@ -180,9 +182,9 @@ const SideDrawer = ({open, setOpen, activeProject, setActiveProject, onProjectCh
             onClick={() => setDialogOpen(true)}
             sx={{
               mb: 2,
-              bgcolor: theme.palette.secondary.main,
+              bgcolor: "#240750",
               '&:hover': {
-                bgcolor: theme.palette.secondary.dark
+                bgcolor: "#240770"
               },
               textTransform: 'none',
               borderRadius: '4px',

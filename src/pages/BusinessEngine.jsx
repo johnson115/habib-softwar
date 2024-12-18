@@ -14,61 +14,42 @@ import {
   IconButton,
   CircularProgress,
   Snackbar,
-  Alert
+  Alert,
+  Tabs,
+  Tab
 } from '@mui/material';
-import { Package, AlertCircle, Target, BoxIcon, Gift, Clock, DollarSign, Shield, ArrowLeft, Play, X } from 'lucide-react';
+import { Tag, MessageCircle, ListChecks, DollarSign, Gift, TrendingUp, ArrowLeft, Play, X } from 'lucide-react';
 import SideDrawer from '../components/drawer';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
-const PerfectOffer = () => {
-  const [formData, setFormData] = useState({
-    productName: {
-      name: '',
-    },
-    coreProblems: {
-      problems: '',
-    },
-    problemSolution: {
-      solution: '',
-    },
-    deliveryMethod: {
-      method: '',
-    },
-    bonuses: {
-      bonusList: '',
-    },
-    urgencyType: {
-      urgency: '',
-    },
-    pricing: {
-      priceStack: '',
-    },
-    guarantees: {
-      guaranteeType: '',
-    }
-  });
+const BusinessEngine = () => {
+  const initialFormState = {
+    name: '',
+    steps: '',
+    ultimateMessage: '',
+    price: '',
+    orderbump: '',
+    upsell: ''
+  };
 
+  const [formData, setFormData] = useState({
+    lowTicket: { ...initialFormState },
+    midTicket: { ...initialFormState },
+    highTicket: { ...initialFormState }
+  });
+  
   const [open, setOpen] = useState(true);
+  const [activeTab, setActiveTab] = useState(0);
   const [completedForms, setCompletedForms] = useState({
-    productName: false,
-    coreProblems: false,
-    problemSolution: false,
-    deliveryMethod: false,
-    bonuses: false,
-    urgencyType: false,
-    pricing: false,
-    guarantees: false
+    lowTicket: false,
+    midTicket: false,
+    highTicket: false
   });
   const [formChanged, setFormChanged] = useState({
-    productName: false,
-    coreProblems: false,
-    problemSolution: false,
-    deliveryMethod: false,
-    bonuses: false,
-    urgencyType: false,
-    pricing: false,
-    guarantees: false
+    lowTicket: false,
+    midTicket: false,
+    highTicket: false
   });
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -89,7 +70,7 @@ const PerfectOffer = () => {
         const response = await axios.get(`http://localhost/projectdataapi.php`, {
           params: {
             project_id: projectId,
-            step_name: 'perfectOffer'
+            step_name: 'businessEngine'
           },
           headers: { 'Authorization': token }
         });
@@ -97,9 +78,8 @@ const PerfectOffer = () => {
         if (response.data.status === 'success') {
           setFormData(response.data.data);
           const newCompletedForms = {};
-          Object.keys(formData).forEach(section => {
-            newCompletedForms[section] = response.data.data[section] && 
-              Object.values(response.data.data[section]).every(value => value && value.trim() !== '');
+          Object.keys(response.data.data).forEach(form => {
+            newCompletedForms[form] = Object.values(response.data.data[form]).every(value => value && value.trim() !== '');
           });
           setCompletedForms(newCompletedForms);
         }
@@ -118,35 +98,33 @@ const PerfectOffer = () => {
     loadData();
   }, [projectId]);
 
-  const handleChange = (section, field) => (event) => {
-    const newFormData = {
-      ...formData,
-      [section]: {
-        ...formData[section],
+  const handleChange = (formType, field) => (event) => {
+    setFormData(prev => ({
+      ...prev,
+      [formType]: {
+        ...prev[formType],
         [field]: event.target.value
       }
-    };
-    
-    setFormData(newFormData);
+    }));
     setFormChanged(prev => ({
       ...prev,
-      [section]: true
+      [formType]: true
     }));
   };
 
-  const validateForm = (section) => {
-    return formData[section] && Object.values(formData[section]).every(value => value && value.trim() !== '');
+  const validateForm = (formType) => {
+    return Object.values(formData[formType]).every(value => value && value.trim() !== '');
   };
 
-  const handleSave = async (section) => {
-    if (validateForm(section)) {
+  const handleSave = async (formType) => {
+    if (validateForm(formType)) {
       try {
         setIsSaving(true);
         const token = localStorage.getItem('token');
         
         const saveResponse = await axios.post('http://localhost/projectdataapi.php', {
           project_id: projectId,
-          step_name: 'perfectOffer',
+          step_name: 'businessEngine',
           data: formData
         }, {
           headers: { 'Authorization': token }
@@ -155,15 +133,16 @@ const PerfectOffer = () => {
         if (saveResponse.data.status === 'success') {
           setCompletedForms(prev => ({
             ...prev,
-            [section]: true
+            [formType]: true
           }));
           setFormChanged(prev => ({
             ...prev,
-            [section]: false
+            [formType]: false
           }));
+
           setSnackbar({
             open: true,
-            message: 'Saved successfully',
+            message: 'Offer saved successfully',
             severity: 'success'
           });
         }
@@ -198,63 +177,43 @@ const PerfectOffer = () => {
     );
   }
 
-  const forms = [
+  const formFields = [
     {
-      id: 'productName',
-      title: 'Your product name',
-      icon: <Package size={24} />,
-      placeholder: 'must be an attention-grabbing name',
-      field: 'name'
+      id: 'name',
+      label: 'Name',
+      icon: <Tag size={24} />
     },
     {
-      id: 'coreProblems',
-      title: 'The core problem your client faces',
-      icon: <AlertCircle size={24} />,
-      placeholder: 'list all the problems your client-facing right now',
-      field: 'problems'
+      id: 'steps',
+      label: 'Steps',
+      icon: <ListChecks size={24} />
     },
     {
-      id: 'problemSolution',
-      title: 'What problem will you solve',
-      icon: <Target size={24} />,
-      placeholder: 'what problem from the previous list did your product solve',
-      field: 'solution'
+      id: 'ultimateMessage',
+      label: 'Ultimate Message',
+      icon: <MessageCircle size={24} />
     },
     {
-      id: 'deliveryMethod',
-      title: 'How will you solve them?',
-      icon: <BoxIcon size={24} />,
-      placeholder: 'course module, template, tool, PDF, another course, etc',
-      field: 'method'
+      id: 'price',
+      label: 'Price',
+      icon: <DollarSign size={24} />
     },
     {
-      id: 'bonuses',
-      title: 'What bonuses will you give to your client',
-      icon: <Gift size={24} />,
-      placeholder: 'Enter the bonuses you will provide',
-      field: 'bonusList'
+      id: 'orderbump',
+      label: 'Orderbump',
+      icon: <Gift size={24} />
     },
     {
-      id: 'urgencyType',
-      title: 'What urgency type will you use',
-      icon: <Clock size={24} />,
-      placeholder: 'special bonus, limited-time offer, discount',
-      field: 'urgency'
-    },
-    {
-      id: 'pricing',
-      title: 'Value based Pricing and offer stack',
-      icon: <DollarSign size={24} />,
-      placeholder: 'Enter your pricing strategy',
-      field: 'priceStack'
-    },
-    {
-      id: 'guarantees',
-      title: 'Guarantees',
-      icon: <Shield size={24} />,
-      placeholder: 'moneyback guarantees, work for free',
-      field: 'guaranteeType'
+      id: 'upsell',
+      label: 'Upsell',
+      icon: <TrendingUp size={24} />
     }
+  ];
+
+  const tabs = [
+    { key: 'lowTicket', label: 'Low Ticket Offer' },
+    { key: 'midTicket', label: 'Mid Ticket Offer' },
+    { key: 'highTicket', label: 'High Ticket Offer' }
   ];
 
   return (
@@ -289,55 +248,74 @@ const PerfectOffer = () => {
             Back to Home
           </Button>
           <Typography variant="h4" sx={{ mb: 4 }}>
-            Perfect Offer ® ({Object.values(completedForms).filter(Boolean).length}/8 completed)
+            Business Engine Mechanism ® ({Object.values(completedForms).filter(Boolean).length}/3 completed)
           </Typography>
-          
-          <Grid container spacing={3}>
-            {forms.map((form) => (
-              <Grid item xs={12} md={4} key={form.id}>
-                <Card sx={{ height: '100%' }}>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                      {form.icon}
-                      <Typography variant="h6" sx={{ ml: 1 }}>
-                        {form.title} ®
-                      </Typography>
+
+          <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+            <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)}>
+              {tabs.map((tab, index) => (
+                <Tab 
+                  key={tab.key} 
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      {tab.label}
+                      {completedForms[tab.key] && (
+                        <Typography variant="caption" color="success.main">
+                          (Completed)
+                        </Typography>
+                      )}
                     </Box>
-                    
-                    <TextField
-                      fullWidth
-                      label={form.placeholder}
-                      title={form.placeholder}
-                      multiline
-                      wrap="off"
-                      rows={4}
-                      value={formData[form.id]?.[form.field] || ''}
-                      onChange={handleChange(form.id, form.field)}
-                      sx={{ 
-                        mb: 2,
-                        '& .MuiInputLabel-root': {
-                          whiteSpace: 'normal',
-                          maxWidth: 'none'
-                        }
-                      }}
-                      InputLabelProps={{
-                        shrink: true
-                      }}
-                    />
-                    
+                  } 
+                />
+              ))}
+            </Tabs>
+          </Box>
+
+          {tabs.map((tab, index) => (
+            <Box
+              key={tab.key}
+              role="tabpanel"
+              hidden={activeTab !== index}
+            >
+              {activeTab === index && (
+                <Grid container spacing={3}>
+                  {formFields.map((field) => (
+                    <Grid item xs={12} md={6} key={field.id}>
+                      <Card sx={{ height: '100%' }}>
+                        <CardContent>
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                            {field.icon}
+                            <Typography variant="h6" sx={{ ml: 1 }}>
+                              {field.label} ®
+                            </Typography>
+                          </Box>
+                          
+                          <TextField
+                            fullWidth
+                            multiline
+                            rows={4}
+                            value={formData[tab.key][field.id] || ''}
+                            onChange={handleChange(tab.key, field.id)}
+                            sx={{ mb: 2 }}
+                          />
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
+                  <Grid item xs={12}>
                     <Button 
                       variant="contained" 
-                      onClick={() => handleSave(form.id)}
+                      onClick={() => handleSave(tab.key)}
                       fullWidth
-                      disabled={!formChanged[form.id] && completedForms[form.id] || isSaving}
+                      disabled={!formChanged[tab.key] && completedForms[tab.key] || isSaving}
                     >
-                      {isSaving ? <CircularProgress size={24} /> : 'Save'}
+                      {isSaving ? <CircularProgress size={24} /> : `Save ${tab.label}`}
                     </Button>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+                  </Grid>
+                </Grid>
+              )}
+            </Box>
+          ))}
         </Box>
       </Box>
 
@@ -390,5 +368,5 @@ const PerfectOffer = () => {
   );
 };
 
-export default PerfectOffer;
+export default BusinessEngine;
 

@@ -220,7 +220,7 @@ const PerfectAvatar = () => {
             p: 3,
             width: { sm: `calc(100% - ${drawerWidth}px)` },
             ml: { sm: open ? `${drawerWidth}px` : 0 },
-            bgcolor: 'grey.100',
+            bgcolor: '#f3f3e0',
             minHeight: '100vh',
             transition: theme.transitions.create(['margin', 'width'], {
               easing: theme.transitions.easing.sharp,
@@ -316,7 +316,19 @@ const PerfectAvatar = () => {
                     type="text"
                     value={formData.clientAge?.age || ''}
                     onChange={handleChange('clientAge', 'age')}
-                    sx={{ mb: 2 }}
+                    sx={{ 
+                        mb: 2,
+                        '& .MuiInputLabel-root': {
+                          whiteSpace: 'normal',
+                          maxWidth: 'none',
+                          paddingBottom:'20px',
+                        }
+                      }}
+                      InputLabelProps={{
+                        shrink: true,
+                        
+
+                      }}
                   />
                   
                   <Button 
@@ -349,7 +361,16 @@ const PerfectAvatar = () => {
                     rows={3}
                     value={formData.clientsCoreProblem?.Your_clients_core_problem || ''}
                     onChange={handleChange('clientsCoreProblem', 'Your_clients_core_problem')}
-                    sx={{ mb: 2 }}
+                    sx={{ 
+                        mb: 2,
+                        '& .MuiInputLabel-root': {
+                          whiteSpace: 'normal',
+                          maxWidth: 'none'
+                        }
+                      }}
+                      InputLabelProps={{
+                        shrink: true
+                      }}
                   />
                   
                  
@@ -386,7 +407,16 @@ const PerfectAvatar = () => {
                     rows={3}
                     value={formData.clients_ultimate_goal?.Your_clients_ultimate_goal || ''}
                     onChange={handleChange('clients_ultimate_goal', 'Your_clients_ultimate_goal')}
-                    sx={{ mb: 2 }}
+                    sx={{ 
+                        mb: 2,
+                        '& .MuiInputLabel-root': {
+                          whiteSpace: 'normal',
+                          maxWidth: 'none'
+                        }
+                      }}
+                      InputLabelProps={{
+                        shrink: true
+                      }}
                   />
                   
                  
@@ -422,7 +452,16 @@ const PerfectAvatar = () => {
                     rows={3}
                     value={formData.clientsNiche?.Your_clients_Niche || ''}
                     onChange={handleChange('clientsNiche', 'Your_clients_Niche')}
-                    sx={{ mb: 2 }}
+                    sx={{ 
+                        mb: 2,
+                        '& .MuiInputLabel-root': {
+                          whiteSpace: 'normal',
+                          maxWidth: 'none'
+                        }
+                      }}
+                      InputLabelProps={{
+                        shrink: true
+                      }}
                   />
                   
                  
@@ -459,7 +498,16 @@ const PerfectAvatar = () => {
                     rows={3}
                     value={formData.frustrated_questions_before_bed_time?.Your_frustrated_question_for_clients_before_bed_time || ''}
                     onChange={handleChange('frustrated_questions_before_bed_time', 'Your_frustrated_question_for_clients_before_bed_time')}
-                    sx={{ mb: 2 }}
+                    sx={{ 
+                        mb: 2,
+                        '& .MuiInputLabel-root': {
+                          whiteSpace: 'normal',
+                          maxWidth: 'none'
+                        }
+                      }}
+                      InputLabelProps={{
+                        shrink: true
+                      }}
                   />
                   
                  

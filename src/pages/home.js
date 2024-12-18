@@ -30,11 +30,14 @@ const Home = () => {
     millionDollar: 0,
     perfectOffer: 0,
     ultimateLeadMagnet: 0,
-    authorityAmplifier: 0,
-    enrollmentScript: 0,
-    contentRoadmap: 0,
+    matrixRoadmap: 0,
+    businessEngine: 0,
+    webinarTemplate: 0,
+    helperPage: 0,
+    contentStrategy: 0,
+    emailSequence: 0,
     trafficOnDemand: 0,
-    retargetingRoadmap: 0
+    websiteFunnels: 0
   });
   const [videoOpen, setVideoOpen] = useState(false);
 
@@ -69,14 +72,17 @@ const Home = () => {
         // Fetch the actual data for each step to calculate progress
         const steps = [
           { key: 'perfectAvatar', total: 6 },
-          { key: 'millionDollar', total: 3 },
-          { key: 'perfectOffer', total: 4 },
-          { key: 'ultimateLeadMagnet', total: 4 },
-          { key: 'authorityAmplifier', total: 3 },
-          { key: 'enrollmentScript', total: 6 },
-          { key: 'contentRoadmap', total: 4 },
-          { key: 'trafficOnDemand', total: 4 },
-          { key: 'retargetingRoadmap', total: 4 }
+          { key: 'millionDollar', total: 6 },
+          { key: 'perfectOffer', total: 8 },
+          { key: 'ultimateLeadMagnet', total: 9 },
+          { key: 'matrixRoadmap', total: 9 },
+          { key: 'businessEngine', total: 3 },
+          { key: 'webinarTemplate', total: 3 },
+          { key: 'helperPage', total: 1 },
+          { key: 'contentStrategy', total: 1 },
+          { key: 'emailSequence', total: 1 },
+          { key: 'trafficOnDemand', total: 1 },
+          { key: 'websiteFunnels', total: 1 }
         ];
 
         const progressPromises = steps.map(step => 
@@ -104,50 +110,40 @@ const Home = () => {
 
             // Check each section of the step data
             if (step.key === 'perfectAvatar') {
-              const sections = ['clientGender', 'clientAge', 'clientsCoreProblem',  'clients_ultimate_goal', 'clientsNiche', 'frustrated_questions_before_bed_time'];
+              const sections = ['clientGender', 'clientAge', 'clientsCoreProblem', 'clients_ultimate_goal', 'clientsNiche', 'frustrated_questions_before_bed_time'];
               completedSections = sections.filter(section => 
                 stepData[section] && Object.values(stepData[section]).every(value => value && value.trim() !== '')
               ).length;
             } else if (step.key === 'millionDollar') {
-              const sections = ['calculator', 'clientFilter', 'message'];
+              const sections = ['productName', 'productType', 'productValue', 'problemsSolved', 'productPrice', 'deliveryTimeline'];
               completedSections = sections.filter(section => 
                 stepData[section] && Object.values(stepData[section]).every(value => value && value.trim() !== '')
               ).length;
             } else if (step.key === 'perfectOffer') {
-              const sections = ['phaseOne', 'phaseTwo', 'phaseThree', 'phaseFour'];
+              const sections = ['productName', 'coreProblems', 'problemSolution', 'deliveryMethod', 'bonuses', 'urgencyType', 'pricing', 'guarantees'];
               completedSections = sections.filter(section => 
                 stepData[section] && Object.values(stepData[section]).every(value => value && value.trim() !== '')
               ).length;
             } else if (step.key === 'ultimateLeadMagnet') {
-              const sections = ['coreUlm', 'ulmOne', 'ulmTwo', 'ulmThree'];
+              completedSections = stepData.filter(form => 
+                Object.values(form).every(value => value && value.trim() !== '')
+              ).length;
+            } else if (step.key === 'matrixRoadmap') {
+              completedSections = stepData.filter(form => 
+                Object.values(form).every(value => value && value.trim() !== '')
+              ).length;
+            } else if (step.key === 'businessEngine') {
+              const sections = ['lowTicket', 'midTicket', 'highTicket'];
               completedSections = sections.filter(section => 
                 stepData[section] && Object.values(stepData[section]).every(value => value && value.trim() !== '')
               ).length;
-            } else if (step.key === 'authorityAmplifier') {
-              const sections = ['framingPhase', 'contentPhase', 'actionPhase'];
+            } else if (step.key === 'webinarTemplate') {
+              const sections = ['webinarBigPicture', 'ultimateFramework', 'pitch'];
               completedSections = sections.filter(section => 
                 stepData[section] && Object.values(stepData[section]).every(value => value && value.trim() !== '')
               ).length;
-            } else if (step.key === 'enrollmentScript') {
-              const sections = ['openingPhase', 'discoveryPhase', 'solutionPhase', 'closingPhase', 'followUpPhase', 'scriptRefinement'];
-              completedSections = sections.filter(section => 
-                stepData[section] && Object.values(stepData[section]).every(value => value && value.trim() !== '')
-              ).length;
-            } else if (step.key === 'contentRoadmap') {
-              const sections = ['coreProduct', 'stepOne', 'stepTwo', 'stepThree'];
-              completedSections = sections.filter(section => 
-                stepData[section] && Object.values(stepData[section]).every(value => value && value.trim() !== '')
-              ).length;
-            } else if (step.key === 'trafficOnDemand') {
-              const sections = ['brainstorm', 'coreAdConcept', 'adConceptOne', 'adConceptTwo'];
-              completedSections = sections.filter(section => 
-                stepData[section] && Object.values(stepData[section]).every(value => value && value.trim() !== '')
-              ).length;
-            } else if (step.key === 'retargetingRoadmap') {
-              const sections = ['salesFunnel', 'tofContent', 'mofContent', 'bofContent'];
-              completedSections = sections.filter(section => 
-                stepData[section] && Object.values(stepData[section]).every(value => value && value.trim() !== '')
-              ).length;
+            } else {
+              completedSections = stepData ? Object.keys(stepData).length : 0;
             }
 
             newProgress[step.key] = completedSections;
@@ -179,14 +175,17 @@ const Home = () => {
   const isAllComplete = () => {
     const steps = [
       { key: 'perfectAvatar', total: 6 },
-      { key: 'millionDollar', total: 3 },
-      { key: 'perfectOffer', total: 4 },
-      { key: 'ultimateLeadMagnet', total: 4 },
-      { key: 'authorityAmplifier', total: 3 },
-      { key: 'enrollmentScript', total: 6 },
-      { key: 'contentRoadmap', total: 4 },
-      { key: 'trafficOnDemand', total: 4 },
-      { key: 'retargetingRoadmap', total: 4 }
+      { key: 'millionDollar', total: 6 },
+      { key: 'perfectOffer', total: 8 },
+      { key: 'ultimateLeadMagnet', total: 9 },
+      { key: 'matrixRoadmap', total: 9 },
+      { key: 'businessEngine', total: 3 },
+      { key: 'webinarTemplate', total: 3 },
+      { key: 'helperPage', total: 1 },
+      { key: 'contentStrategy', total: 1 },
+      { key: 'emailSequence', total: 1 },
+      { key: 'trafficOnDemand', total: 1 },
+      { key: 'websiteFunnels', total: 1 }
     ];
 
     return steps.every(step => stepsProgress[step.key] >= step.total);
@@ -264,76 +263,108 @@ const Home = () => {
       key: "perfectAvatar"
     },
     {
-      title: "Million Dollar Message",
-      icon: "💰",
-      step: 2,
-      progress: stepsProgress.millionDollar,
-      total: 3,
-      dir: `/million-dollar-message/${projectId}`,
-      key: "millionDollar"
-    },
-    {
-      title: "Perfect Offer",
+      title: "your perfect offer checklist",
       icon: "💎",
-      step: 3,
+      step: 2,
       progress: stepsProgress.perfectOffer,
-      total: 4,
+      total: 8,
       dir: `/perfect-offer/${projectId}`,
       key: "perfectOffer"
     },
     {
+      title: "Your Ultimate Message",
+      icon: "💰",
+      step: 3,
+      progress: stepsProgress.millionDollar,
+      total: 6,
+      dir: `/million-dollar-message/${projectId}`,
+      key: "millionDollar"
+    },
+    {
+      title: "Your 3:6:9 Matrix Roadmap",
+      icon: "📊",
+      step: 4,
+      progress: stepsProgress.matrixRoadmap,
+      total: 9,
+      dir: `/Matrix-Roadmap/${projectId}`,
+      key: "matrixRoadmap"
+    },
+    {
       title: "Ultimate Lead Magnet",
       icon: "🧲",
-      step: 4,
+      step: 5,
       progress: stepsProgress.ultimateLeadMagnet,
-      total: 4,
+      total: 9,
       dir: `/ultimate-lead-magnet/${projectId}`,
       key: "ultimateLeadMagnet"
     },
     {
-      title: "Authority Amplifier",
-      icon: "📢",
-      step: 5,
-      progress: stepsProgress.authorityAmplifier,
-      total: 3,
-      dir: `/authority-amplifier/${projectId}`,
-      key: "authorityAmplifier"
-    },
-    {
-      title: "10x Enrollment Script",
-      icon: "📝",
+      title: "your business engine mechanism",
+      icon: "⚙️",
       step: 6,
-      progress: stepsProgress.enrollmentScript,
-      total: 6,
-      dir: `/enrollment-script/${projectId}`,
-      key: "enrollmentScript"
+      progress: stepsProgress.businessEngine,
+      total: 3,
+      dir: `/Business-Engine/${projectId}`,
+      key: "businessEngine"
     },
     {
-      title: "Content Roadmap",
-      icon: "📅",
+      title: "Your Webinar Template ",
+      icon: "🎥",
       step: 7,
-      progress: stepsProgress.contentRoadmap,
-      total: 4,
-      dir: `/content-roadmap/${projectId}`,
-      key: "contentRoadmap"
+      progress: stepsProgress.webinarTemplate,
+      total: 3,
+      dir: `/Webinar-Template/${projectId}`,
+      key: "webinarTemplate"
     },
     {
-      title: "Traffic on Demand",
-      icon: "🔄",
+      title: "Your helper page structure",
+      icon: "📋",
       step: 8,
-      progress: stepsProgress.trafficOnDemand,
-      total: 4,
-      dir: `/traffic-on-demand/${projectId}`,
-      key: "trafficOnDemand"
+      progress: stepsProgress.helperPage,
+      total: 1,
+      dir: "#",
+      key: "helperPage",
+      comingSoon: true
     },
     {
-      title: "Retargeting Roadmap",
-      icon: "🎯",
+      title: "Your Content Strategy",
+      icon: "📝",
       step: 9,
-      progress: stepsProgress.retargetingRoadmap,
-      total: 4,
-      dir: `/retargeting-roadmap/${projectId}`,
-      key: "retargetingRoadmap"
+      progress: stepsProgress.contentStrategy,
+      total: 1,
+      dir: "#",
+      key: "contentStrategy",
+      comingSoon: true
+    },
+    {
+      title: "your email follow-up sequence",
+      icon: "✉️",
+      step: 10,
+      progress: stepsProgress.emailSequence,
+      total: 1,
+      dir: "#",
+      key: "emailSequence",
+      comingSoon: true
+    },
+    {
+      title: "Traffic on demand",
+      icon: "🚦",
+      step: 11,
+      progress: stepsProgress.trafficOnDemand,
+      total: 1,
+      dir: "#",
+      key: "trafficOnDemand",
+      comingSoon: true
+    },
+    {
+      title: "Your website, funnels and Ads template",
+      icon: "🌐",
+      step: 12,
+      progress: stepsProgress.websiteFunnels,
+      total: 1,
+      dir: "#",
+      key: "websiteFunnels",
+      comingSoon: true
     }
   ];
 
@@ -369,10 +400,10 @@ const Home = () => {
             startIcon={<Play size={16} />}
             onClick={() => setVideoOpen(true)}
             sx={{
-              bgcolor: 'primary.main',
+              bgcolor: '#240750',
               color: 'white',
               '&:hover': {
-                bgcolor: 'primary.dark',
+                bgcolor: '#240770',
               }
             }}
           >
@@ -389,7 +420,7 @@ const Home = () => {
             gap: 2
           }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Typography variant="h4" sx={{color:"#9c27b0", textAlign:"center"}} component="h1">
+              <Typography variant="h4" sx={{color:"#240750", textAlign:"center"}} component="h1">
                 Campaign Dashboard
               </Typography>
               
@@ -420,7 +451,7 @@ const Home = () => {
                 }}>
                   <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
                     <FilePen size={20} color={theme.palette.text.secondary} style={{
-                      cursor:"pointer",
+                      cursor: step.comingSoon ? "not-allowed" : "pointer",
                       borderRadius:"50%",
                       transition:"all 0.7s",
                       '&:hover': {
@@ -428,7 +459,9 @@ const Home = () => {
                         backgroundColor:'#999999'
                       }
                     }} onClick={() => {
-                      navigate(step.dir)
+                      if (!step.comingSoon) {
+                        navigate(step.dir)
+                      }
                     }} />
                   </Box>
                   <CardContent sx={{ flexGrow: 1 }}>
@@ -455,51 +488,62 @@ const Home = () => {
                     <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
                       Step {step.step}
                     </Typography>
-                    {step.progress === step.total ? (
+                    {step.comingSoon ? (
                       <Button
                         variant="contained"
-                        startIcon={<Download />}
-                        onClick={async () => {
-                          try {
-                            const token = localStorage.getItem('token');
-                            const response = await axios.get(`http://localhost/projectdataapi.php`, {
-                              params: {
-                                project_id: projectId,
-                                step_name: step.key
-                              },
-                              headers: { 'Authorization': token }
-                            });
-                            const stepData = response.data.data;
-
-                            const doc = new jsPDF();
-                            doc.setFontSize(16);
-                            doc.text(step.title, 10, 10);
-                            doc.setFontSize(12);
-                            let yPos = 30;
-                            Object.entries(stepData).forEach(([key, value]) => {
-                              doc.text(`${key}: ${value}`, 10, yPos);
-                              yPos += 10;
-                            });
-                            doc.save(`${step.title.toLowerCase().replace(/\s+/g, '_')}.pdf`);
-                          } catch (error) {
-                            console.error('Error generating PDF:', error);
-                          }
-                        }}
+                        disabled
                         fullWidth
-                        sx={{ mt: 2 }}
+                        sx={{ mt: 2, bgcolor: 'grey.300' }}
                       >
-                        Download PDF
+                        Coming Soon
                       </Button>
                     ) : (
-                      <Button
-                        variant="contained"
-                        component={Link}
-                        to={step.dir}
-                        fullWidth
-                        sx={{ mt: 2 }}
-                      >
-                        Continue
-                      </Button>
+                      step.progress === step.total ? (
+                        <Button
+                          variant="contained"
+                          startIcon={<Download />}
+                          onClick={async () => {
+                            try {
+                              const token = localStorage.getItem('token');
+                              const response = await axios.get(`http://localhost/projectdataapi.php`, {
+                                params: {
+                                  project_id: projectId,
+                                  step_name: step.key
+                                },
+                                headers: { 'Authorization': token }
+                              });
+                              const stepData = response.data.data;
+
+                              const doc = new jsPDF();
+                              doc.setFontSize(16);
+                              doc.text(step.title, 10, 10);
+                              doc.setFontSize(12);
+                              let yPos = 30;
+                              Object.entries(stepData).forEach(([key, value]) => {
+                                doc.text(`${key}: ${value}`, 10, yPos);
+                                yPos += 10;
+                              });
+                              doc.save(`${step.title.toLowerCase().replace(/\s+/g, '_')}.pdf`);
+                            } catch (error) {
+                              console.error('Error generating PDF:', error);
+                            }
+                          }}
+                          fullWidth
+                          sx={{ mt: 2 ,backgroundColor:"#000080" }}
+                        >
+                          Download PDF
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="contained"
+                          component={Link}
+                          to={step.dir}
+                          fullWidth
+                          sx={{ mt: 2 , backgroundColor:"#000080" }}
+                        >
+                          Continue
+                        </Button>
+                      )
                     )}
                   </CardContent>
                 </Card>

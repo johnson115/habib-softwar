@@ -14,62 +14,34 @@ import {
   IconButton,
   CircularProgress,
   Snackbar,
-  Alert
+  Alert,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails
 } from '@mui/material';
-import { Package, AlertCircle, Target, BoxIcon, Gift, Clock, DollarSign, Shield, ArrowLeft, Play, X } from 'lucide-react';
+import { Footprints, AlertTriangle, ListChecks, HelpCircle, TrendingUp, CheckSquare, Target, MessageCircle, ChevronDown, ArrowLeft, Play, X } from 'lucide-react';
 import SideDrawer from '../components/drawer';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
-const PerfectOffer = () => {
-  const [formData, setFormData] = useState({
-    productName: {
-      name: '',
-    },
-    coreProblems: {
-      problems: '',
-    },
-    problemSolution: {
-      solution: '',
-    },
-    deliveryMethod: {
-      method: '',
-    },
-    bonuses: {
-      bonusList: '',
-    },
-    urgencyType: {
-      urgency: '',
-    },
-    pricing: {
-      priceStack: '',
-    },
-    guarantees: {
-      guaranteeType: '',
-    }
-  });
+const MatrixRoadmap = () => {
+  // Initialize state for 9 forms
+  const initialFormState = {
+    stepName: '',
+    struggles: '',
+    stepOutline: '',
+    questions: '',
+    benefits: '',
+    actions: '',
+    results: '',
+    ultimateMessage: ''
+  };
 
+  const [formData, setFormData] = useState(Array(9).fill(null).map(() => ({...initialFormState})));
   const [open, setOpen] = useState(true);
-  const [completedForms, setCompletedForms] = useState({
-    productName: false,
-    coreProblems: false,
-    problemSolution: false,
-    deliveryMethod: false,
-    bonuses: false,
-    urgencyType: false,
-    pricing: false,
-    guarantees: false
-  });
-  const [formChanged, setFormChanged] = useState({
-    productName: false,
-    coreProblems: false,
-    problemSolution: false,
-    deliveryMethod: false,
-    bonuses: false,
-    urgencyType: false,
-    pricing: false,
-    guarantees: false
-  });
+  const [completedForms, setCompletedForms] = useState(Array(9).fill(false));
+  const [formChanged, setFormChanged] = useState(Array(9).fill(false));
+  const [expandedForm, setExpandedForm] = useState(0);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
@@ -89,18 +61,16 @@ const PerfectOffer = () => {
         const response = await axios.get(`http://localhost/projectdataapi.php`, {
           params: {
             project_id: projectId,
-            step_name: 'perfectOffer'
+            step_name: 'matrixRoadmap'
           },
           headers: { 'Authorization': token }
         });
     
         if (response.data.status === 'success') {
           setFormData(response.data.data);
-          const newCompletedForms = {};
-          Object.keys(formData).forEach(section => {
-            newCompletedForms[section] = response.data.data[section] && 
-              Object.values(response.data.data[section]).every(value => value && value.trim() !== '');
-          });
+          const newCompletedForms = response.data.data.map(form => 
+            Object.values(form).every(value => value && value.trim() !== '')
+          );
           setCompletedForms(newCompletedForms);
         }
       } catch (error) {
@@ -118,52 +88,49 @@ const PerfectOffer = () => {
     loadData();
   }, [projectId]);
 
-  const handleChange = (section, field) => (event) => {
-    const newFormData = {
-      ...formData,
-      [section]: {
-        ...formData[section],
-        [field]: event.target.value
-      }
+  const handleChange = (formIndex, field) => (event) => {
+    const newFormData = [...formData];
+    newFormData[formIndex] = {
+      ...newFormData[formIndex],
+      [field]: event.target.value
     };
     
     setFormData(newFormData);
-    setFormChanged(prev => ({
-      ...prev,
-      [section]: true
-    }));
+    const newFormChanged = [...formChanged];
+    newFormChanged[formIndex] = true;
+    setFormChanged(newFormChanged);
   };
 
-  const validateForm = (section) => {
-    return formData[section] && Object.values(formData[section]).every(value => value && value.trim() !== '');
+  const validateForm = (formIndex) => {
+    return Object.values(formData[formIndex]).every(value => value && value.trim() !== '');
   };
 
-  const handleSave = async (section) => {
-    if (validateForm(section)) {
+  const handleSave = async (formIndex) => {
+    if (validateForm(formIndex)) {
       try {
         setIsSaving(true);
         const token = localStorage.getItem('token');
         
         const saveResponse = await axios.post('http://localhost/projectdataapi.php', {
           project_id: projectId,
-          step_name: 'perfectOffer',
+          step_name: 'matrixRoadmap',
           data: formData
         }, {
           headers: { 'Authorization': token }
         });
 
         if (saveResponse.data.status === 'success') {
-          setCompletedForms(prev => ({
-            ...prev,
-            [section]: true
-          }));
-          setFormChanged(prev => ({
-            ...prev,
-            [section]: false
-          }));
+          const newCompletedForms = [...completedForms];
+          newCompletedForms[formIndex] = true;
+          setCompletedForms(newCompletedForms);
+          
+          const newFormChanged = [...formChanged];
+          newFormChanged[formIndex] = false;
+          setFormChanged(newFormChanged);
+
           setSnackbar({
             open: true,
-            message: 'Saved successfully',
+            message: 'Step saved successfully',
             severity: 'success'
           });
         }
@@ -198,62 +165,46 @@ const PerfectOffer = () => {
     );
   }
 
-  const forms = [
+  const formFields = [
     {
-      id: 'productName',
-      title: 'Your product name',
-      icon: <Package size={24} />,
-      placeholder: 'must be an attention-grabbing name',
-      field: 'name'
+      id: 'stepName',
+      label: 'Your step name',
+      icon: <Footprints size={24} />
     },
     {
-      id: 'coreProblems',
-      title: 'The core problem your client faces',
-      icon: <AlertCircle size={24} />,
-      placeholder: 'list all the problems your client-facing right now',
-      field: 'problems'
+      id: 'struggles',
+      label: 'Top three struggles my clients run into when going through this step',
+      icon: <AlertTriangle size={24} />
     },
     {
-      id: 'problemSolution',
-      title: 'What problem will you solve',
-      icon: <Target size={24} />,
-      placeholder: 'what problem from the previous list did your product solve',
-      field: 'solution'
+      id: 'stepOutline',
+      label: 'Step Outline',
+      icon: <ListChecks size={24} />
     },
     {
-      id: 'deliveryMethod',
-      title: 'How will you solve them?',
-      icon: <BoxIcon size={24} />,
-      placeholder: 'course module, template, tool, PDF, another course, etc',
-      field: 'method'
+      id: 'questions',
+      label: 'The top 3 questions my audience might ask in this step',
+      icon: <HelpCircle size={24} />
     },
     {
-      id: 'bonuses',
-      title: 'What bonuses will you give to your client',
-      icon: <Gift size={24} />,
-      placeholder: 'Enter the bonuses you will provide',
-      field: 'bonusList'
+      id: 'benefits',
+      label: 'What benefits this step will increase and decrease',
+      icon: <TrendingUp size={24} />
     },
     {
-      id: 'urgencyType',
-      title: 'What urgency type will you use',
-      icon: <Clock size={24} />,
-      placeholder: 'special bonus, limited-time offer, discount',
-      field: 'urgency'
+      id: 'actions',
+      label: 'List the 3 actions in this step',
+      icon: <CheckSquare size={24} />
     },
     {
-      id: 'pricing',
-      title: 'Value based Pricing and offer stack',
-      icon: <DollarSign size={24} />,
-      placeholder: 'Enter your pricing strategy',
-      field: 'priceStack'
+      id: 'results',
+      label: 'The results will achieve',
+      icon: <Target size={24} />
     },
     {
-      id: 'guarantees',
-      title: 'Guarantees',
-      icon: <Shield size={24} />,
-      placeholder: 'moneyback guarantees, work for free',
-      field: 'guaranteeType'
+      id: 'ultimateMessage',
+      label: "This step's ultimate message",
+      icon: <MessageCircle size={24} />
     }
   ];
 
@@ -289,55 +240,76 @@ const PerfectOffer = () => {
             Back to Home
           </Button>
           <Typography variant="h4" sx={{ mb: 4 }}>
-            Perfect Offer ® ({Object.values(completedForms).filter(Boolean).length}/8 completed)
+            3:6:9 Matrix Roadmap ® ({completedForms.filter(Boolean).length}/9 completed)
           </Typography>
-          
-          <Grid container spacing={3}>
-            {forms.map((form) => (
-              <Grid item xs={12} md={4} key={form.id}>
-                <Card sx={{ height: '100%' }}>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                      {form.icon}
-                      <Typography variant="h6" sx={{ ml: 1 }}>
-                        {form.title} ®
-                      </Typography>
-                    </Box>
-                    
-                    <TextField
-                      fullWidth
-                      label={form.placeholder}
-                      title={form.placeholder}
-                      multiline
-                      wrap="off"
-                      rows={4}
-                      value={formData[form.id]?.[form.field] || ''}
-                      onChange={handleChange(form.id, form.field)}
-                      sx={{ 
-                        mb: 2,
-                        '& .MuiInputLabel-root': {
-                          whiteSpace: 'normal',
-                          maxWidth: 'none'
-                        }
-                      }}
-                      InputLabelProps={{
-                        shrink: true
-                      }}
-                    />
-                    
+
+          {Array(9).fill(null).map((_, formIndex) => (
+            <Accordion 
+              key={formIndex}
+              expanded={expandedForm === formIndex}
+              onChange={() => setExpandedForm(expandedForm === formIndex ? -1 : formIndex)}
+              sx={{ mb: 2 }}
+            >
+              <AccordionSummary expandIcon={<ChevronDown />}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Typography variant="h6">
+                    Step {formIndex + 1}
+                  </Typography>
+                  {completedForms[formIndex] && (
+                    <Typography variant="body2" color="success.main">
+                      Completed
+                    </Typography>
+                  )}
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Grid container spacing={3}>
+                  {formFields.map((field) => (
+                    <Grid item xs={12} md={6} key={field.id}>
+                      <Card sx={{ height: '100%' }}>
+                        <CardContent>
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                            {field.icon}
+                            <Typography variant="h6" sx={{ ml: 1 }}>
+                              {field.label} ®
+                            </Typography>
+                          </Box>
+                          
+                          <TextField
+                            fullWidth
+                            multiline
+                            rows={4}
+                            value={formData[formIndex][field.id] || ''}
+                            onChange={handleChange(formIndex, field.id)}
+                            sx={{ 
+                              mb: 2,
+                              '& .MuiInputLabel-root': {
+                                whiteSpace: 'normal',
+                                maxWidth: 'none'
+                              }
+                            }}
+                            InputLabelProps={{
+                              shrink: true
+                            }}
+                          />
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
+                  <Grid item xs={12}>
                     <Button 
                       variant="contained" 
-                      onClick={() => handleSave(form.id)}
+                      onClick={() => handleSave(formIndex)}
                       fullWidth
-                      disabled={!formChanged[form.id] && completedForms[form.id] || isSaving}
+                      disabled={!formChanged[formIndex] && completedForms[formIndex] || isSaving}
                     >
-                      {isSaving ? <CircularProgress size={24} /> : 'Save'}
+                      {isSaving ? <CircularProgress size={24} /> : 'Save Step'}
                     </Button>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+                  </Grid>
+                </Grid>
+              </AccordionDetails>
+            </Accordion>
+          ))}
         </Box>
       </Box>
 
@@ -390,5 +362,5 @@ const PerfectOffer = () => {
   );
 };
 
-export default PerfectOffer;
+export default MatrixRoadmap;
 

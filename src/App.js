@@ -7,15 +7,15 @@ import PerfectAvatar from "./pages/perfectavatar";
 import MillionDollarMessage from "./pages/milliondollars";
 import PerfectOffer from "./pages/perfectOffer";
 import UltimateLeadMagnet from "./pages/ultimateLeadMagnet";
-import AuthorityAmplifier from "./pages/authiority";
-import EnrollmentScript from "./pages/enrollmentscript";
-import ContentRoadmap from "./pages/contentRoadmap";
 import TrafficOnDemand from "./pages/trafficondemande";
 import RetargetingRoadmap from "./pages/retargetingRoadmap";
 import CheckProjects from "./components/checkProjects";
 import CreateLaunchmap from "./pages/createProject";
 import GlobalAdminPage from "./admin/admin";
 import Info from "./pages/info";
+import MatrixRoadmap from "./pages/matrix";
+import BusinessEngine from "./pages/BusinessEngine";
+import WebinarTemplate from "./pages/WebinarTemplate";
 
 function App() {
   return (
@@ -34,9 +34,9 @@ function App() {
         <Route path="/million-dollar-message/:projectId" element={<PrivateRoute><MillionDollarMessage /></PrivateRoute>} />
         <Route path="/perfect-offer/:projectId" element={<PrivateRoute><PerfectOffer /></PrivateRoute>} />
         <Route path="/ultimate-lead-magnet/:projectId" element={<PrivateRoute><UltimateLeadMagnet /></PrivateRoute>} />
-        <Route path="/authority-amplifier/:projectId" element={<PrivateRoute><AuthorityAmplifier /></PrivateRoute>} />
-        <Route path="/enrollment-script/:projectId" element={<PrivateRoute><EnrollmentScript /></PrivateRoute>} />
-        <Route path="/content-roadmap/:projectId" element={<PrivateRoute><ContentRoadmap /></PrivateRoute>} />
+        <Route path="/Matrix-Roadmap/:projectId" element={<PrivateRoute><MatrixRoadmap /></PrivateRoute>} />
+        <Route path="/Business-Engine/:projectId" element={<PrivateRoute><BusinessEngine /></PrivateRoute>} />
+        <Route path="/Webinar-Template/:projectId" element={<PrivateRoute><WebinarTemplate /></PrivateRoute>} />
         <Route path="/traffic-on-demand/:projectId" element={<PrivateRoute><TrafficOnDemand /></PrivateRoute>} />
         <Route path="/retargeting-roadmap/:projectId" element={<PrivateRoute><RetargetingRoadmap /></PrivateRoute>} />
         <Route path="/Haboub" element={<GlobalAdminPage/>}/>
